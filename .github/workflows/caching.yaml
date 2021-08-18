@@ -6,7 +6,7 @@ env: # Set the secret as an input
 jobs:
   Clone-down:
     name: Clone down repo
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: gradle:6-jdk11
     steps:
     - uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
   Test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Clone-down
     container: gradle:6-jdk11
     steps:
@@ -34,7 +34,7 @@ jobs:
     - name: Test with Gradle
       run: chmod +x ci/unit-test-app.sh && ci/unit-test-app.sh
   Build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Clone-down
     container: gradle:6-jdk11
     steps:
@@ -53,7 +53,7 @@ jobs:
         name: code
         path: .
   Docker-image:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [Build,Test]
     steps:
     - name: Cache Gradle packages
@@ -68,7 +68,7 @@ jobs:
     - name: push docker
       run: chmod +x ci/push-docker.sh && export GIT_COMMIT="GA-$GITHUB_SHA" && ci/push-docker.sh
   Component-test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Docker-image
     steps:
     - name: Cache Gradle packages
